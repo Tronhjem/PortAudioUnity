@@ -15,7 +15,7 @@ public class AudioInitializer : MonoBehaviour
     [DllImport("SimpleAudioPlayerDLL", CallingConvention = CallingConvention.Cdecl)]
     public static extern void StopAudioStream();
 
-    [DllImport("SimpleAudioPlayerDLL", CallingConvention = CallingConvention.Cdecl)]
+    [DllImport("SimpleAudioPlayerDLL", Calli  gConvention = CallingConvention.Cdecl)]
     public static extern int GetBufferLength();
 
     [DllImport("SimpleAudioPlayerDLL", CallingConvention = CallingConvention.Cdecl)]

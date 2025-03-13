@@ -1,21 +1,18 @@
-#include "SimpleAudioPlayer.h"
+#include "SimpleAudioAPI.h"
+#include "portaudio.h"
+#include <iostream>
 
-SimpleAudioPlayer audioPlayer;
-extern "C"
+int main()
 {
-    // just for testing
-    int AddSomeNumbers(int a, int b)
-    {
-        return a + b;
-    }
+    CreateAudio();
+    PrintDevices();
 
-    void RunAudioStuff()
-    {
-        audioPlayer.Run();
-    }
+    StartAudioStream();
 
-    void StopAudioStuff(void* streamToStop)
-    {
-        audioPlayer.Stop();
-    }
+    Pa_Sleep(6000);
+
+    StopAudioStream();
+    DestroyAudio();
+
+    return 0;
 }
