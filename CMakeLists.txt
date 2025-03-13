@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES
+set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/SimpleAudioPlayer.cpp
 )
@@ -11,7 +11,7 @@ if(WIN32)
 
     #Windows DLL
     project(SimpleAudioPlayerDLL)
-    add_library(SimpleAudioPlayerDLL SHARED ${SOURCE_FILES})
+    add_library(SimpleAudioPlayerDLL SHARED ${SOURCES})
     target_include_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/includes)
     target_link_libraries(SimpleAudioPlayerDLL portaudio)
     target_link_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
@@ -19,7 +19,7 @@ if(WIN32)
 elseif(APPLE)
     # Audio Player Bundle.
     project(AudioPlayer)
-    add_library(AudioPlayer MODULE src/main.cpp src/SimpleAudioPlayer.cpp)            
+    add_library(AudioPlayer MODULE ${SOURCES})            
 
     set_target_properties(
         AudioPlayer 
@@ -45,7 +45,7 @@ endif()
 
 # executable for testing 
 project(AudioPlayerExe)
-add_executable(AudioPlayerExe src/main.cpp src/SimpleAudioPlayer.cpp)
+add_executable(AudioPlayerExe ${SOURCES})
 target_include_directories(AudioPlayerExe PRIVATE include)
 target_link_directories(AudioPlayerExe PRIVATE lib)
 
