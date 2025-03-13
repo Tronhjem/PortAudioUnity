@@ -8,8 +8,16 @@ set(SOURCE_FILES
 
 if(WIN32)
     set(CMAKE_VS_SDK_INCLUDE_DIRECTORIES $(VC_IncludePath);$(WindowsSDK_IncludePath); ${CMAKE_SOURCE_DIR}/includes)
+
+    #Windows DLL
+    project(SimpleAudioPlayerDLL)
+    add_library(SimpleAudioPlayerDLL SHARED ${SOURCE_FILES})
+    target_include_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/includes)
+    target_link_libraries(SimpleAudioPlayerDLL portaudio)
+    target_link_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
 elseif(APPLE)
-    # Audio Player Bundle / dll.
+    # Audio Player Bundle.
     project(AudioPlayer)
     add_library(AudioPlayer MODULE src/main.cpp src/SimpleAudioPlayer.cpp)            
 
@@ -35,8 +43,7 @@ elseif(APPLE)
     target_link_libraries(AudioPlayer "-framework Carbon")
 endif()
 
-
-# EXE FILE
+# executable for testing 
 project(AudioPlayerExe)
 add_executable(AudioPlayerExe src/main.cpp src/SimpleAudioPlayer.cpp)
 target_include_directories(AudioPlayerExe PRIVATE include)
