@@ -26,7 +26,7 @@ SimpleAudio::~SimpleAudio()
     Pa_Terminate();
 }
 
-bool SimpleAudio::OpenStream(int inputDevice, int outputDevice, int bufferSize, int sampleRate)
+bool SimpleAudio::OpenStream(int inputDevice, int inputChannels, int outputDevice, int outputChannels, int bufferSize, int sampleRate)
 {
     if (mErr != paNoError)
         return false;

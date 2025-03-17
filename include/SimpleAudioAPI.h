@@ -31,11 +31,11 @@ extern "C"
 		}
 	}
 
-    DLLEXPORT bool StartAudioStream()
+    DLLEXPORT bool StartAudioStream(int inputDevice, int inputChannelCount, int outputDevice, int outputChannels)
     {
 		if (audioInAndOut != nullptr)
 		{
-			audioInAndOut->OpenStream(2, 3, FRAMES_PER_BUFFER, SAMPLE_RATE);
+			audioInAndOut->OpenStream(inputDevice, inputChannelCount, outputDevice, outputChannels, FRAMES_PER_BUFFER, SAMPLE_RATE);
 			return audioInAndOut->StartStream();
 		}
 
@@ -70,5 +70,25 @@ extern "C"
 			return audioInAndOut->mTempBuffer->GetSample(index);
 
 		return 0;
+	}
+
+    DLLEXPORT int GetDeviceCount()
+	{
+		return Pa_GetDeviceCount();
+	}
+
+    DLLEXPORT const char* GetInputDeviceName(int deviceIndex)
+    {
+		return Pa_GetDeviceInfo(deviceIndex)->name;
+	}
+
+    DLLEXPORT int GetDeviceInputChannels(int deviceIndex)
+    {
+		return Pa_GetDeviceInfo(deviceIndex)->maxInputChannels;
+	}
+
+    DLLEXPORT int GetDeviceOutputChannels(int deviceIndex)
+    {
+		return Pa_GetDeviceInfo(deviceIndex)->maxOutputChannels;
 	}
 }
