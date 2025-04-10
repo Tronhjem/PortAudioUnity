@@ -16,35 +16,32 @@ double f = 300.0 / (double)SAMPLE_RATE;
 
 SimpleAudio::SimpleAudio() : mErr(0), mStream(nullptr)
 {
-    mTempBuffer = new TempBuffer();
+    mUserData.mBuffer = new TempBuffer();
     mErr = Pa_Initialize();
 }
 
 SimpleAudio::~SimpleAudio()
 {
-    delete mTempBuffer;
+    delete mUserData.mBuffer;
     Pa_Terminate();
 }
 
-bool SimpleAudio::OpenStream(int inputDevice, int inputChannels, int outputDevice, int outputChannels, int bufferSize, int sampleRate)
+bool SimpleAudio::OpenStream(int inputDevice, int outputDevice, int bufferSize, int sampleRate)
 {
     if (mErr != paNoError)
         return false;
 
-    PaStreamParameters inputParameters;
-    PaStreamParameters outputParameters;
+    mUserData.inputParameters.device = inputDevice;
+    mUserData.inputParameters.channelCount = Pa_GetDeviceInfo(inputDevice)->maxInputChannels;
+    mUserData.inputParameters.sampleFormat = paFloat32;
+    mUserData.inputParameters.suggestedLatency = Pa_GetDeviceInfo(mUserData.inputParameters.device)->defaultLowInputLatency;
+    mUserData.inputParameters.hostApiSpecificStreamInfo = nullptr;
 
-    inputParameters.device = inputDevice;
-    inputParameters.channelCount = 1;
-    inputParameters.sampleFormat = paFloat32;
-    inputParameters.suggestedLatency = Pa_GetDeviceInfo(inputParameters.device)->defaultLowInputLatency;
-    inputParameters.hostApiSpecificStreamInfo = nullptr;
-
-    outputParameters.device = outputDevice;
-    outputParameters.channelCount = 2;
-    outputParameters.sampleFormat = paFloat32;
-    outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
-    outputParameters.hostApiSpecificStreamInfo = nullptr;
+    mUserData.outputParameters.device = outputDevice;
+    mUserData.outputParameters.channelCount = Pa_GetDeviceInfo(outputDevice)->maxOutputChannels;
+    mUserData.outputParameters.sampleFormat = paFloat32;
+    mUserData.outputParameters.suggestedLatency = Pa_GetDeviceInfo(mUserData.outputParameters.device)->defaultLowOutputLatency;
+    mUserData.outputParameters.hostApiSpecificStreamInfo = nullptr;
 
 #if PA_USE_ASIO
     PaAsioStreamInfo asioOutputInfo;
@@ -61,13 +58,13 @@ bool SimpleAudio::OpenStream(int inputDevice, int inputChannels, int outputDevic
 
     mErr = Pa_OpenStream(
         &mStream,
-        &inputParameters,
-        &outputParameters,
+        &mUserData.inputParameters,
+        &mUserData.outputParameters,
         sampleRate,
         bufferSize,
         paClipOff,
         AudioCallback,
-        mTempBuffer);
+        &mUserData);
 
     PaErrorCode code = (PaErrorCode)mErr;
     std::cout << "Open stream: " << Pa_GetErrorText((PaErrorCode)mErr) << std::endl;
@@ -103,14 +100,6 @@ void SimpleAudio::PrintDeviceInfo()
         const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
         std::cout << i << ": " << info->name << std::endl;
     }
-
-    // auto apiCount = Pa_GetHostApiCount();
-    // for (int i = 0; i < apiCount; ++i)
-    // {
-    //     auto info = Pa_GetHostApiInfo(i);
-    //     int x = 0;
-    //     ++x;
-    // }
 }
 
 int AudioCallback(const void *inputBuffer, 
@@ -120,27 +109,40 @@ int AudioCallback(const void *inputBuffer,
                   PaStreamCallbackFlags statusFlags,
                   void *userData)
 {
-    TempBuffer* data = (TempBuffer*) userData;
+    UserData* data = (UserData*) userData;
 
     float* in = (float*)inputBuffer;
     float* out = (float*)outputBuffer;
 
-    int counter = 0;
+    int inCounter = 0;
+    int outCounter = 0;
     for (int i = 0; i < framesPerBuffer; i++)
     {
         // Sine test
-        double sample = 0.2 * sin(2.0 * PI * d);
-        d += f;
+        // double sample = 0.2 * sin(2.0 * PI * d);
+        // d += f;
 
-        data->WriteNextSample((float)sample);
+        float inputSum = 0.f;
+        if (in != nullptr)
+        {
+            for (int j = 0; j < data->inputParameters.channelCount; ++j)
+            {
+                inputSum += in[inCounter] * 0.707f;
+                ++inCounter;
+            }
 
-        // out[counter] = in[counter];
-        out[counter] = sample;
-        ++counter;
+            if (data->mBuffer != nullptr)
+                data->mBuffer->WriteNextSample(inputSum);
+        }
 
-        // out[counter] = in[counter];
-        out[counter] = sample;
-        ++counter;
+        if (out != nullptr)
+        {
+            for (int j = 0; j < data->outputParameters.channelCount; ++j)
+            {
+                out[outCounter] = inputSum;
+                ++outCounter;
+            }
+        }
     }
 
     return 0;

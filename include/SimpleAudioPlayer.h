@@ -3,18 +3,25 @@
 #include "TempBuffer.h"
 #include "portaudio.h"
 
+struct UserData
+{
+    TempBuffer* mBuffer;
+    PaStreamParameters inputParameters;
+    PaStreamParameters outputParameters;
+};
+
 class SimpleAudio
 {
 public:
     SimpleAudio();
     ~SimpleAudio();
-    bool OpenStream(int inputDevice, int inputChannels, int outputDevice, int outputChannels, int bufferSize, int sampleRate);
+    bool OpenStream(int inputDevice, int outputDevice, int bufferSize, int sampleRate);
     void CloseStream();
     bool StartStream();
     void StopStream();
     void PrintDeviceInfo();
 
-    TempBuffer* mTempBuffer;
+    UserData mUserData;
 
 private:
     PaError mErr;

@@ -8,7 +8,7 @@ int main()
     PrintDevices();
 
     // input device 2, 1 channel, output device 3, 2 channels.
-    StartAudioStream(2, 1, 3, 2);
+    StartAudioStream(2, 3);
 
     Pa_Sleep(6000);
 

@@ -31,11 +31,11 @@ extern "C"
 		}
 	}
 
-    DLLEXPORT bool StartAudioStream(int inputDevice, int inputChannelCount, int outputDevice, int outputChannels)
+    DLLEXPORT bool StartAudioStream(int inputDevice, int outputDevice)
     {
 		if (audioInAndOut != nullptr)
 		{
-			audioInAndOut->OpenStream(inputDevice, inputChannelCount, outputDevice, outputChannels, FRAMES_PER_BUFFER, SAMPLE_RATE);
+			audioInAndOut->OpenStream(inputDevice, outputDevice, FRAMES_PER_BUFFER, SAMPLE_RATE);
 			return audioInAndOut->StartStream();
 		}
 
@@ -59,17 +59,17 @@ extern "C"
     DLLEXPORT int GetWritePosition()
     {
 		if (audioInAndOut != nullptr)
-			return audioInAndOut->mTempBuffer->writeLocation;
+			return audioInAndOut->mUserData.mBuffer->writeLocation;
 
 		return 0;
 	}
 
-    DLLEXPORT int GetSampleFromBuffer(int index)
+    DLLEXPORT float GetSampleFromBuffer(int index)
     {
 		if (audioInAndOut != nullptr)
-			return audioInAndOut->mTempBuffer->GetSample(index);
+			return audioInAndOut->mUserData.mBuffer->GetSample(index);
 
-		return 0;
+		return 0.f;
 	}
 
     DLLEXPORT int GetDeviceCount()
