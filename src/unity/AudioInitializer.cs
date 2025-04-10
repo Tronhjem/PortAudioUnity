@@ -54,7 +54,6 @@ public class AudioInitializer : MonoBehaviour
     }
 
     // UNITY Stuff
-
     private void Awake()
     {
         CreateAudio();
