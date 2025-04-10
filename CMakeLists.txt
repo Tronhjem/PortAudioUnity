@@ -10,11 +10,11 @@ if(WIN32)
     set(CMAKE_VS_SDK_INCLUDE_DIRECTORIES $(VC_IncludePath);$(WindowsSDK_IncludePath); ${CMAKE_SOURCE_DIR}/include)
 
     #Windows DLL
-    project(SimpleAudioPlayerDLL)
-    add_library(SimpleAudioPlayerDLL SHARED ${SOURCES})
-    target_include_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-    target_link_libraries(SimpleAudioPlayerDLL portaudio)
-    target_link_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+    project(AudioPlayer)
+    add_library(AudioPlayer SHARED ${SOURCES})
+    target_include_directories(AudioPlayer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_link_libraries(AudioPlayer portaudio)
+    target_link_directories(AudioPlayer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
     project(AudioPlayerExe)
     add_executable(AudioPlayerExe ${SOURCES})
