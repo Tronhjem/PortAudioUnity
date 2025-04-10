@@ -7,14 +7,20 @@ set(SOURCES
 )
 
 if(WIN32)
-    set(CMAKE_VS_SDK_INCLUDE_DIRECTORIES $(VC_IncludePath);$(WindowsSDK_IncludePath); ${CMAKE_SOURCE_DIR}/includes)
+    set(CMAKE_VS_SDK_INCLUDE_DIRECTORIES $(VC_IncludePath);$(WindowsSDK_IncludePath); ${CMAKE_SOURCE_DIR}/include)
 
     #Windows DLL
     project(SimpleAudioPlayerDLL)
     add_library(SimpleAudioPlayerDLL SHARED ${SOURCES})
-    target_include_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/includes)
+    target_include_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_link_libraries(SimpleAudioPlayerDLL portaudio)
     target_link_directories(SimpleAudioPlayerDLL PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
+    project(AudioPlayerExe)
+    add_executable(AudioPlayerExe ${SOURCES})
+    target_include_directories(AudioPlayerExe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_link_directories(AudioPlayerExe PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+    target_link_libraries(AudioPlayerExe portaudio)
 
 elseif(APPLE)
     # Audio Player Bundle.
@@ -41,17 +47,18 @@ elseif(APPLE)
     target_link_libraries(AudioPlayer "-framework AudioUnit")
     target_link_libraries(AudioPlayer "-framework CoreServices")
     target_link_libraries(AudioPlayer "-framework Carbon")
+
+    # executable for testing 
+    project(AudioPlayerExe)
+    add_executable(AudioPlayerExe ${SOURCES})
+    target_include_directories(AudioPlayerExe PRIVATE include)
+    target_link_directories(AudioPlayerExe PRIVATE lib)
+
+    target_link_libraries(AudioPlayerExe portaudio)
+    target_link_libraries(AudioPlayerExe "-framework CoreAudio")
+    target_link_libraries(AudioPlayerExe "-framework AudioToolbox")
+    target_link_libraries(AudioPlayerExe "-framework AudioUnit")
+    target_link_libraries(AudioPlayerExe "-framework CoreServices")
+    target_link_libraries(AudioPlayerExe "-framework Carbon")
 endif()
 
-# executable for testing 
-project(AudioPlayerExe)
-add_executable(AudioPlayerExe ${SOURCES})
-target_include_directories(AudioPlayerExe PRIVATE include)
-target_link_directories(AudioPlayerExe PRIVATE lib)
-
-target_link_libraries(AudioPlayerExe portaudio)
-target_link_libraries(AudioPlayerExe "-framework CoreAudio")
-target_link_libraries(AudioPlayerExe "-framework AudioToolbox")
-target_link_libraries(AudioPlayerExe "-framework AudioUnit")
-target_link_libraries(AudioPlayerExe "-framework CoreServices")
-target_link_libraries(AudioPlayerExe "-framework Carbon")
