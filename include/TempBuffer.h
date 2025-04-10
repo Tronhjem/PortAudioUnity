@@ -4,7 +4,7 @@
 class TempBuffer
 {
 public:
-    TempBuffer() : writeLocation(0)
+    TempBuffer() : mWriteLocation(0), mLastCompletedBufferPosition(0)
     {
         for (int i = 0; i < bufferLength; ++i)
         {
@@ -14,9 +14,9 @@ public:
 
     void WriteNextSample(float s)
     {
-        buffer[writeLocation] = s;
-        ++writeLocation;
-        writeLocation &= bufferLengthMask;
+        buffer[mWriteLocation] = s;
+        ++mWriteLocation;
+        mWriteLocation &= bufferLengthMask;
     }
 
     float GetSample(int i)
@@ -25,8 +25,16 @@ public:
         return buffer[i];
     }
 
-    int writeLocation;
+    int GetLastCompletedBufferPosition() { return mLastCompletedBufferPosition; }
+    int GetWritePosition() { return mWriteLocation; }
+    void IncrementCompletedBufferPosition(int sample)
+    {
+        mLastCompletedBufferPosition += sample;
+        mLastCompletedBufferPosition &= bufferLengthMask;
+    }
 
 private:
+    int mWriteLocation;
+    int mLastCompletedBufferPosition;
     float buffer[bufferLength];
 };

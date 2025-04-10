@@ -59,7 +59,7 @@ extern "C"
     DLLEXPORT int GetWritePosition()
     {
 		if (audioInAndOut != nullptr)
-			return audioInAndOut->mUserData.mBuffer->writeLocation;
+			return audioInAndOut->mUserData.mBuffer->GetWritePosition();
 
 		return 0;
 	}

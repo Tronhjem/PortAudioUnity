@@ -11,8 +11,10 @@
 #define INPUT_DEVICE Pa_GetDefaultInputDevice()
 #define OUTPUT_DEVICE Pa_GetDefaultOutputDevice()
 
+// sinewave debugging stuff
 double d = 0.0;
 double f = 300.0 / (double)SAMPLE_RATE;
+//end sinewave debugging stuff
 
 SimpleAudio::SimpleAudio() : mErr(0), mStream(nullptr)
 {
@@ -52,8 +54,8 @@ bool SimpleAudio::OpenStream(int inputDevice, int outputDevice, int bufferSize, 
     asioOutputInfo.flags = paAsioUseChannelSelectors;
     asioOutputInfo.channelSelectors = outputChannelSelectors;
 
-    inputParameters.hostApiSpecificStreamInfo = &asioOutputInfo;
-    outputParameters.hostApiSpecificStreamInfo = nullptr;
+    mUserData.inputParameters.hostApiSpecificStreamInfo = &asioOutputInfo;
+    mUserData.outputParameters.hostApiSpecificStreamInfo = nullptr;
 #endif
 
     mErr = Pa_OpenStream(

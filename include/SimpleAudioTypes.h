@@ -6,7 +6,7 @@
     #define DLLEXPORT
 #endif
 
-#define PA_USE_ASIO 0
+// #define PA_USE_ASIO _WIN32
 #define SAMPLE_RATE (44100)
 #define FRAMES_PER_BUFFER (64)
 #define PI (3.14159265359)
