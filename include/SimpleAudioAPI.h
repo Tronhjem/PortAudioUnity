@@ -53,7 +53,7 @@ extern "C"
 
     DLLEXPORT int GetBufferLength()
     {
-		return bufferLength;
+		return BUFFER_LENGTH;
 	}
 
     DLLEXPORT int GetWritePosition()

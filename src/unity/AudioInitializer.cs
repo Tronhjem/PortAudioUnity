@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Runtime.InteropServices;
 using System;
 
-public class AudioInitializer : MonoBehaviour
+public class AudioPlayer
 {
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
     public static extern void CreateAudio();
@@ -11,7 +11,7 @@ public class AudioInitializer : MonoBehaviour
     public static extern void DestroyAudio();
 
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
-    public static extern bool StartAudioStream(int inputDevice, int inputChannel, int outputDevice, int outputChannel);
+    public static extern bool StartAudioStream(int inputDevice, int outputDevic3);
 
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
     public static extern void StopAudioStream();
@@ -23,19 +23,19 @@ public class AudioInitializer : MonoBehaviour
     public static extern int GetWritePosition();
 
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int GetSampleFromBuffer(int index);
+    public static extern float GetSampleFromBuffer(int index);
 
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
     public static extern int GetDeviceCount();
 
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
-    public static extern IntPtr GetInputDeviceName(int deviceIndex);
+    private static extern IntPtr GetInputDeviceName(int deviceIndex);
 
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int GetDeviceInputChannels(int deviceIndex);
+    private static extern int GetDeviceInputChannels(int deviceIndex);
 
     [DllImport("AudioPlayer", CallingConvention = CallingConvention.Cdecl)]
-    public static extern int GetDeviceOutputChannels(int deviceIndex);
+    private static extern int GetDeviceOutputChannels(int deviceIndex);
 
     public static string GetName(int deviceIndex)
     {
@@ -53,34 +53,55 @@ public class AudioInitializer : MonoBehaviour
         return GetDeviceOutputChannels(deviceIndex);
     }
 
-    // UNITY Stuff
-    private void Awake()
+    public static AudioPlayer Instance
+    {
+        get
+        {
+            if (init == null)
+                init = new AudioPlayer();
+            return init;
+        }
+    }
+    private static AudioPlayer init = null;
+
+    public void Init()
+    {
+        Debug.Log("Init");
+    }
+
+    public AudioPlayer()
     {
         CreateAudio();
+    }
+    ~AudioPlayer()
+    {
+        DestroyAudio();
+    }
+}
+
+public class AudioInitializer : MonoBehaviour
+{
+    [HideInInspector] public int InputDeviceId = 1;
+    [HideInInspector] public int OutputDeviceId = 3;
+    [HideInInspector] public static bool AudioIsInitialized = false;
+
+    private void Awake()
+    {
+        AudioPlayer.Instance.Init();
     }
 
     void OnEnable()
     {
-        int bufferLeng = GetBufferLength();
-
-        int devices = GetDeviceCount();
-        for (int i = 0; i < devices; ++i)
-        {
-            GetName(i);
-            GetInputChannels(i);
-            GetOutputChannels(i);
-        }
-
-        bool wasInit = StartAudioStream(2, 1, 3, 2);
+        AudioIsInitialized = AudioPlayer.StartAudioStream(InputDeviceId, OutputDeviceId);
     }
 
     void OnDisable()
     {
-        StopAudioStream();
+        AudioIsInitialized = false;
+        AudioPlayer.StopAudioStream();
     }
 
     private void OnDestroy()
     {
-        DestroyAudio();
     }
 }

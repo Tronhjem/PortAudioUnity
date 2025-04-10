@@ -11,5 +11,5 @@
 #define FRAMES_PER_BUFFER (64)
 #define PI (3.14159265359)
 
-const int bufferLength = 4096;
-const int bufferLengthMask = bufferLength - 1;
+const int BUFFER_LENGTH = 4096;
+const int BUFFER_LENGTH_MASK = BUFFER_LENGTH - 1;

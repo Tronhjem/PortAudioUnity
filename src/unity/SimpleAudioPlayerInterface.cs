@@ -15,7 +15,6 @@ public class SimpleAudioPlayerInterface : MonoBehaviour
         AudioSource source = GetComponent<AudioSource>();
         if (source != null)
         {
-            //source.clip = AudioClip.Create("input", 44100 * 4, 1, 44100, false);
             source.loop = true;
             source.Play();
         }
@@ -29,20 +28,26 @@ public class SimpleAudioPlayerInterface : MonoBehaviour
             length = length / channels;
         }
 
+        if (!AudioInitializer.AudioIsInitialized)
+            return;
+
         if(firstTimeSetup)
         {
-            //int pos = GetWritePosition();
-            //readPosition = (pos - length) & bufferLengthMask;
-            //firstTimeSetup = false;
+            int pos = AudioPlayer.GetWritePosition();
+            readPosition = (pos - length) & bufferLengthMask;
+            firstTimeSetup = false;
         }
 
         for (int i = 0; i < data.Length; i += 2)
         {
-            float sample = 0.2f * Mathf.Sin(2 * Mathf.PI * f);
-            //float sample = GetSampleFromBuffer(readPosition);
+            //float sample = 0.2f * Mathf.Sin(2 * Mathf.PI * f);
+            ////float sample = GetSampleFromBuffer(readPosition);
+
+            float sample = AudioPlayer.GetSampleFromBuffer(readPosition);
             data[i] = sample;
             data[i + 1] = sample;
-            f += delta;
+
+            //f += delta;
 
             ++readPosition;
             readPosition &= bufferLengthMask;
