@@ -36,13 +36,15 @@ bool SimpleAudio::OpenStream(int inputDevice, int outputDevice, int bufferSize, 
     mUserData.inputParameters.device = inputDevice;
     mUserData.inputParameters.channelCount = Pa_GetDeviceInfo(inputDevice)->maxInputChannels;
     mUserData.inputParameters.sampleFormat = paFloat32;
-    mUserData.inputParameters.suggestedLatency = Pa_GetDeviceInfo(mUserData.inputParameters.device)->defaultLowInputLatency;
+    // mUserData.inputParameters.suggestedLatency = Pa_GetDeviceInfo(mUserData.inputParameters.device)->defaultLowInputLatency;
+    mUserData.inputParameters.suggestedLatency = 0.001;
     mUserData.inputParameters.hostApiSpecificStreamInfo = nullptr;
 
     mUserData.outputParameters.device = outputDevice;
     mUserData.outputParameters.channelCount = Pa_GetDeviceInfo(outputDevice)->maxOutputChannels;
     mUserData.outputParameters.sampleFormat = paFloat32;
-    mUserData.outputParameters.suggestedLatency = Pa_GetDeviceInfo(mUserData.outputParameters.device)->defaultLowOutputLatency;
+    // mUserData.outputParameters.suggestedLatency = Pa_GetDeviceInfo(mUserData.outputParameters.device)->defaultLowOutputLatency;
+    mUserData.outputParameters.suggestedLatency = 0.001;
     mUserData.outputParameters.hostApiSpecificStreamInfo = nullptr;
 
 #if PA_USE_ASIO
@@ -70,6 +72,7 @@ bool SimpleAudio::OpenStream(int inputDevice, int outputDevice, int bufferSize, 
 
     PaErrorCode code = (PaErrorCode)mErr;
     std::cout << "Open stream: " << Pa_GetErrorText((PaErrorCode)mErr) << std::endl;
+    std::cout << std::endl;
     return mErr == 0;
 }
 
@@ -78,6 +81,9 @@ bool SimpleAudio::StartStream()
     mErr = Pa_StartStream(mStream);
     PaErrorCode code = (PaErrorCode)mErr;
     std::cout << "Start Stream: " << Pa_GetErrorText((PaErrorCode)mErr) << std::endl;
+    std::cout << std::endl;
+
+    PrintStreamInfo();
     return mErr == paNoError;
 }
 
@@ -86,12 +92,14 @@ void SimpleAudio::StopStream()
     mErr = Pa_StopStream(mStream);
     PaErrorCode code = (PaErrorCode)mErr;
     std::cout << "Stop Stream: " << Pa_GetErrorText((PaErrorCode)mErr) << std::endl;
+    std::cout << std::endl;
 }
 
 void SimpleAudio::CloseStream()
 {
     mErr = Pa_CloseStream(mStream);
     std::cout << "Close Stream: " << Pa_GetErrorText((PaErrorCode)mErr) << std::endl;
+    std::cout << std::endl;
 }
 
 void SimpleAudio::PrintDeviceInfo()
@@ -101,6 +109,19 @@ void SimpleAudio::PrintDeviceInfo()
     {
         const PaDeviceInfo* info = Pa_GetDeviceInfo(i);
         std::cout << i << ": " << info->name << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void SimpleAudio::PrintStreamInfo()
+{
+    const PaStreamInfo* streamInfo = Pa_GetStreamInfo(mStream);
+    if(streamInfo)
+    {
+        std::cout << "Input latency: " << streamInfo->inputLatency * 1000.0 << std::endl;
+        std::cout << "Ouput latency: " << streamInfo->outputLatency * 1000.0 << std::endl;
+        std::cout << "sample rate: " << streamInfo->sampleRate << std::endl;
+        std::cout << std::endl;
     }
 }
 

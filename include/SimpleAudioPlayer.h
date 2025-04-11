@@ -20,6 +20,7 @@ public:
     bool StartStream();
     void StopStream();
     void PrintDeviceInfo();
+    void PrintStreamInfo();
 
     UserData mUserData;
 
