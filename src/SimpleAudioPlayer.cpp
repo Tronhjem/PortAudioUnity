@@ -137,14 +137,14 @@ int AudioCallback(const void *inputBuffer,
                 data->mBuffer->WriteNextSample(inputSum);
         }
 
-        // if (out != nullptr)
-        // {
-        //     for (int j = 0; j < data->outputParameters.channelCount; ++j)
-        //     {
-        //         out[outCounter] = inputSum;
-        //         ++outCounter;
-        //     }
-        // }
+        if (out != nullptr)
+        {
+            for (int j = 0; j < data->outputParameters.channelCount; ++j)
+            {
+                out[outCounter] = inputSum;
+                ++outCounter;
+            }
+        }
     }
 
     return 0;
